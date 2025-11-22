@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Instruction, InstructionType } from '../types/game';
-import { ArrowRight, Undo2, Redo2, Repeat, Star, Square } from 'lucide-react';
+import { ArrowRight, Undo2, Redo2, Repeat, Star, Square, Footprints } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
@@ -16,6 +16,7 @@ export const BlockIcon = ({ type }: { type: InstructionType }) => {
     case 'TURN_RIGHT': return <Redo2 className="w-4 h-4 md:w-5 md:h-5" />;
     case 'JUMP': return <ArrowRight className="w-4 h-4 md:w-5 md:h-5 -rotate-45" />; 
     case 'LOOP': return <Repeat className="w-4 h-4 md:w-5 md:h-5" />;
+    case 'WHILE_PATH': return <Footprints className="w-4 h-4 md:w-5 md:h-5" />;
     case 'IF_STAR': return <Star className="w-4 h-4 md:w-5 md:h-5" />;
     case 'IF_WALL': return <Square className="w-4 h-4 md:w-5 md:h-5" />;
     default: return null;
@@ -28,7 +29,8 @@ export const BlockLabel = ({ type, loopCount }: { type: InstructionType, loopCou
     case 'TURN_LEFT': return 'Left';
     case 'TURN_RIGHT': return 'Right';
     case 'JUMP': return 'Jump';
-    case 'LOOP': return `Loop ${loopCount ?? ''}`;
+    case 'LOOP': return `Loop ${loopCount}x`;
+    case 'WHILE_PATH': return 'While Path';
     case 'IF_STAR': return 'If Star';
     case 'IF_WALL': return 'If Wall';
     default: return type;
@@ -36,7 +38,7 @@ export const BlockLabel = ({ type, loopCount }: { type: InstructionType, loopCou
 };
 
 export const getBlockColor = (type: InstructionType) => {
-  if (type === 'LOOP' || type.startsWith('IF')) return 'bg-accent border-b-4 border-yellow-600 text-black';
+  if (type === 'LOOP' || type === 'WHILE_PATH' || type.startsWith('IF')) return 'bg-accent border-b-4 border-yellow-600 text-black';
   if (type.startsWith('TURN')) return 'bg-secondary border-b-4 border-pink-700 text-white';
   return 'bg-primary border-b-4 border-violet-700 text-white';
 };

@@ -8,6 +8,7 @@ export type InstructionType =
   | 'TURN_RIGHT' 
   | 'JUMP' 
   | 'LOOP' 
+  | 'WHILE_PATH' // New: While path ahead is clear
   | 'IF_STAR' // Conditional: if on star
   | 'IF_WALL'; // Conditional: if facing wall
 
@@ -34,5 +35,6 @@ export interface Level {
   start: PlayerState;
   availableBlocks: InstructionType[];
   minStars: number;
+  bestBlockCount: number; // Par score for blocks used
   tutorialText?: string;
 }

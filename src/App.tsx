@@ -16,11 +16,15 @@ function App() {
   const unlockedLevels = useGameStore(s => s.unlockedLevels);
   const exportSave = useGameStore(s => s.exportSave);
   const importSave = useGameStore(s => s.importSave);
-  const codeLength = useGameStore(s => s.code.length);
+  // const codeLength = useGameStore(s => s.code.length); // Removed, using total count
+  const getInstructionCount = useGameStore(s => s.getInstructionCount);
+  const code = useGameStore(s => s.code); // Subscribe to code changes to trigger re-render of count
+  
   const isMenuOpen = useGameStore(s => s.isMenuOpen);
   const setMenuOpen = useGameStore(s => s.setMenuOpen);
   
   const currentLevel = levels.find(l => l.id === currentLevelId);
+  const instructionCount = getInstructionCount();
 
   // Init Level on Mount to ensure playerState is correct
   useEffect(() => {
@@ -79,7 +83,12 @@ function App() {
             <div className="p-3 bg-gray-50 border-b border-gray-200 font-bold text-gray-500 text-sm flex justify-between items-center h-12">
                 <div className="flex items-center gap-2">
                     <span>YOUR CODE</span>
-                    <span className="text-xs bg-gray-200 px-2 py-1 rounded">{codeLength} blocks</span>
+                    <span className={clsx(
+                        "text-xs px-2 py-1 rounded font-mono",
+                        currentLevel?.bestBlockCount && instructionCount <= currentLevel.bestBlockCount ? "bg-green-100 text-green-700" : "bg-gray-200"
+                    )}>
+                        {instructionCount} / {currentLevel?.bestBlockCount || '-'}
+                    </span>
                 </div>
                 <CodeToolbar />
             </div>

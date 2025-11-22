@@ -40,6 +40,7 @@ interface GameState {
   tick: () => void; // Execute one step
   
   unlockAllLevels: () => void; // Cheat
+  getInstructionCount: () => number;
   exportSave: () => string;
   importSave: (data: string) => boolean;
 }
@@ -56,7 +57,17 @@ const findInstruction = (list: Instruction[], id: string): { item: Instruction, 
   return null;
 };
 
-// Default start configuration
+const countInstructions = (list: Instruction[]): number => {
+    let count = 0;
+    for (const i of list) {
+        count++;
+        if (i.instructions) {
+            count += countInstructions(i.instructions);
+        }
+    }
+    return count;
+};
+
 const DEFAULT_LEVEL_ID = 1;
 const getDefaultState = (levelId: number) => {
     const level = levels.find(l => l.id === levelId) || levels[0];
@@ -111,14 +122,13 @@ export const useGameStore = create<GameState>()(
 
       addInstruction: (type, parentId) => {
         const newBlock: Instruction = {
-          id: uuidv4(),
-          type,
-          loopCount: type === 'LOOP' ? 2 : undefined,
-          instructions: (type === 'LOOP' || type === 'IF_STAR' || type === 'IF_WALL') ? [] : undefined
-        };
-
-        set((state) => {
-          if (!parentId) {
+                id: uuidv4(),
+                type,
+                loopCount: type === 'LOOP' ? 2 : undefined,
+                instructions: (type === 'LOOP' || type === 'WHILE_PATH' || type === 'IF_STAR' || type === 'IF_WALL') ? [] : undefined
+              };
+          
+              set((state) => {          if (!parentId) {
             return { code: [...state.code, newBlock] };
           }
           const newCode = JSON.parse(JSON.stringify(state.code));
@@ -187,6 +197,8 @@ export const useGameStore = create<GameState>()(
       tick: () => {},
 
       unlockAllLevels: () => set({ unlockedLevels: levels.map(l => l.id) }),
+
+      getInstructionCount: () => countInstructions(get().code),
 
       exportSave: () => {
         const { unlockedLevels, stars, currentLevelId } = get();

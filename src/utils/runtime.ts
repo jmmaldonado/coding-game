@@ -80,6 +80,37 @@ export class GameRuntime {
           return this.getResult(instruction.id); // Highlight the loop block itself briefly
         }
         break;
+      case 'WHILE_PATH':
+        // While path ahead is clear (not wall, not hole, not bounds)
+        if (this.isPathClear()) {
+           if (instruction.instructions && instruction.instructions.length > 0) {
+             // We push the block to stack. 
+             // IMPORTANT: A 'While' loop needs to re-evaluate the condition after the body finishes.
+             // In our stack model, simple looping is handled by 'loopCount'.
+             // For conditional loops, we can simulate it by pushing the body, 
+             // AND THEN pushing the 'WHILE' instruction itself back onto the stack? 
+             // OR, we keep the 'WHILE' instruction as the current frame and only advance index if condition fails.
+             
+             // Let's use the 'loopCount' mechanism but treat it differently? No.
+             // Standard stack approach:
+             // 1. Push body.
+             // 2. When body finishes, we are back at this instruction (if we didn't increment index).
+             
+             // BUT my runtime increments index *before* execution switch: `frame.index++;`
+             // So we need to decrement it to stay on this instruction?
+             
+             frame.index--; // Stay on this instruction to re-evaluate after body
+             
+             this.stack.push({
+                 instructions: instruction.instructions,
+                 index: 0
+             });
+           }
+        } else {
+            // Condition failed, we are already pointing to next (index++ happened)
+            // Just continue
+        }
+        return this.getResult(instruction.id);
       case 'IF_STAR':
         if (this.isStandingOnStar()) {
            if (instruction.instructions && instruction.instructions.length > 0) {
@@ -208,6 +239,16 @@ export class GameRuntime {
       const { dx, dy } = this.getDirOffsets(dir);
       const tile = this.getTile(x + dx, y + dy);
       return tile === 'WALL' || tile === 'BOUNDS';
+  }
+
+  private isPathClear(): boolean {
+      const { x, y, dir } = this.playerState;
+      const { dx, dy } = this.getDirOffsets(dir);
+      const tile = this.getTile(x + dx, y + dy);
+      // Path is clear if it's not a wall and not bounds. 
+      // Holes? Technically a path you can move into (and die), but usually "While Path" implies safe path.
+      // Let's say clear means SAFE to move.
+      return tile !== 'WALL' && tile !== 'BOUNDS' && tile !== 'HOLE';
   }
 
   private checkCollections() {
