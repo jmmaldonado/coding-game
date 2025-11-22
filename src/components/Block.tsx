@@ -58,10 +58,12 @@ export const Block: React.FC<BlockProps> = ({ instruction }) => {
       animate={{ scale: isSelected ? 1.05 : 1, opacity: 1 }}
       className={clsx(
         "relative rounded-xl font-bold shadow-sm select-none touch-none transition-all cursor-pointer",
+        // Mobile: Compact, flexible width, no auto margin. Desktop: Full width.
+        "w-auto min-w-[110px] max-w-[160px] md:w-full md:max-w-none md:min-w-0",
         getBlockColor(instruction.type),
         isActive && "ring-4 ring-green-400 z-20",
-        isSelected && "ring-4 ring-white z-10",
-        "mb-2"
+        isSelected && "ring-4 ring-white z-10"
+        // mb-2 removed, handled by parent gap
       )}
     >
       <div className="flex items-center gap-2 p-3">
@@ -78,9 +80,13 @@ export const Block: React.FC<BlockProps> = ({ instruction }) => {
 
       {/* Render Children if any */}
       {instruction.instructions && (
-        <div className="pl-4 pr-2 pb-2 bg-black/10 rounded-b-xl min-h-[40px] border-t border-black/5">
+        <div className={clsx(
+            "pl-2 pr-2 pb-2 bg-black/10 rounded-b-xl min-h-[40px] border-t border-black/5",
+            // Mobile: Wrap children. Desktop: Stack children.
+            "flex flex-wrap gap-2 md:block md:space-y-2"
+        )}>
             {instruction.instructions.length === 0 && (
-                <div className="text-xs opacity-50 py-2 text-center">Tap here to add</div>
+                <div className="w-full text-xs opacity-50 py-2 text-center">Tap here to add</div>
             )}
             {instruction.instructions.map(child => (
                 <Block 

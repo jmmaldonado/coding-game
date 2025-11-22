@@ -24,7 +24,7 @@ export const Palette: React.FC = () => {
           key={type}
           onClick={() => handleAdd(type)}
           className={clsx(
-            "flex flex-col items-center justify-center min-w-[80px] p-3 rounded-xl text-white font-bold shadow-sm active:scale-95 transition-transform",
+            "flex flex-col items-center justify-center min-w-[80px] flex-shrink-0 p-3 rounded-xl text-white font-bold shadow-sm active:scale-95 transition-transform",
             getBlockColor(type)
           )}
         >
