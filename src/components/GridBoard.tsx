@@ -102,13 +102,13 @@ const Player = ({ x, y, dir, rows, cols }: { x: number, y: number, dir: Directio
         >
             <motion.div
                 className="relative z-10 flex items-center justify-center"
-                layout // Framer motion layout animation handles the smooth movement between grid cells!
+                layout 
                 initial={false}
                 animate={{ 
                     gridColumnStart: x + 1,
                     gridRowStart: y + 1,
                 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
             >
                 <Robot dir={dir} />
             </motion.div>
@@ -127,6 +127,7 @@ const Robot = ({ dir }: { dir: Direction }) => {
     return (
         <motion.div 
             animate={{ rotate: rotation[dir] }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="w-10 h-10 bg-white rounded-xl shadow-xl border-2 border-gray-200 flex items-center justify-center relative"
         >
             {/* Eyes */}

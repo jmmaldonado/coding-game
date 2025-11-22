@@ -76,7 +76,7 @@ export const useGameStore = create<GameState>()(
       code: [],
       isPlaying: false,
       isPaused: false,
-      executionSpeed: 500, // ms per tick
+      executionSpeed: 800, // ms per tick - Slower for clearer steps
       
       playerState: defaults.playerState,
       collectedStars: [],
