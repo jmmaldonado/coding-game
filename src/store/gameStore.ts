@@ -13,6 +13,7 @@ interface GameState {
   code: Instruction[];
   isPlaying: boolean;
   isPaused: boolean;
+  isMenuOpen: boolean;
   executionSpeed: number;
   
   // Runtime State
@@ -26,6 +27,7 @@ interface GameState {
   // Actions
   loadLevel: (id: number) => void;
   setPlayerState: (state: PlayerState) => void;
+  setMenuOpen: (isOpen: boolean) => void;
   setSelectedBlockId: (id: string | null) => void;
   addInstruction: (type: InstructionType, parentId?: string) => void;
   removeInstruction: (id: string) => void;
@@ -76,6 +78,7 @@ export const useGameStore = create<GameState>()(
       code: [],
       isPlaying: false,
       isPaused: false,
+      isMenuOpen: false,
       executionSpeed: 800, // ms per tick - Slower for clearer steps
       
       playerState: defaults.playerState,
@@ -95,6 +98,7 @@ export const useGameStore = create<GameState>()(
           collectedStars: [],
           gameStatus: 'IDLE',
           isPlaying: false,
+          isMenuOpen: false, // Close menu on load
           error: null,
           activeInstructionId: null,
           selectedBlockId: null
@@ -102,6 +106,7 @@ export const useGameStore = create<GameState>()(
       },
 
       setPlayerState: (state) => set({ playerState: state }),
+      setMenuOpen: (isOpen) => set({ isMenuOpen: isOpen }),
       setSelectedBlockId: (id) => set({ selectedBlockId: id }),
 
       addInstruction: (type, parentId) => {

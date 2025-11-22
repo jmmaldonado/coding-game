@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useGameStore } from './store/gameStore';
 import { levels } from './data/levels';
 import { GridBoard } from './components/GridBoard';
@@ -17,8 +17,8 @@ function App() {
   const exportSave = useGameStore(s => s.exportSave);
   const importSave = useGameStore(s => s.importSave);
   const codeLength = useGameStore(s => s.code.length);
-  
-  const [isMenuOpen, setMenuOpen] = useState(false);
+  const isMenuOpen = useGameStore(s => s.isMenuOpen);
+  const setMenuOpen = useGameStore(s => s.setMenuOpen);
   
   const currentLevel = levels.find(l => l.id === currentLevelId);
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { levels } from '../data/levels';
-import { RefreshCcw, ArrowRight, Trophy } from 'lucide-react';
+import { RefreshCcw, ArrowRight, Trophy, Menu } from 'lucide-react';
 
 export const Overlay: React.FC = () => {
   const gameStatus = useGameStore(s => s.gameStatus);
@@ -11,10 +11,9 @@ export const Overlay: React.FC = () => {
   
   const loadLevel = useGameStore(s => s.loadLevel);
   const resetLevel = useGameStore(s => s.resetLevel);
-  // const unlockAll = useGameStore(s => s.unlockAllLevels);
+  const setMenuOpen = useGameStore(s => s.setMenuOpen);
   
-  // Unlock next level logic should be here or in store?
-  // Let's do it here on mount if won.
+  const isLastLevel = currentLevelId === levels.length; // Assuming IDs are 1..N and sorted
   
   React.useEffect(() => {
       if (gameStatus === 'WON') {
@@ -49,15 +48,31 @@ export const Overlay: React.FC = () => {
                     <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center">
                         <Trophy className="w-10 h-10 text-yellow-500" />
                     </div>
-                    <h2 className="text-3xl font-black text-gray-800">Level Complete!</h2>
-                    <p className="text-gray-500">Great job, Codey is happy!</p>
                     
-                    <button 
-                        onClick={() => loadLevel(currentLevelId + 1)}
-                        className="w-full py-4 bg-green-500 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-green-600 transition active:scale-95 flex items-center justify-center gap-2"
-                    >
-                        Next Level <ArrowRight />
-                    </button>
+                    {isLastLevel ? (
+                         <>
+                            <h2 className="text-3xl font-black text-gray-800">Quest Completed!</h2>
+                            <p className="text-gray-500">You are a coding master! You've finished all levels.</p>
+                            <button 
+                                onClick={() => { useGameStore.setState({ gameStatus: 'IDLE' }); setMenuOpen(true); }}
+                                className="w-full py-4 bg-primary text-white rounded-xl font-bold text-lg shadow-lg hover:bg-violet-600 transition active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                <Menu /> Level Menu
+                            </button>
+                         </>
+                    ) : (
+                        <>
+                            <h2 className="text-3xl font-black text-gray-800">Level Complete!</h2>
+                            <p className="text-gray-500">Great job, Codey is happy!</p>
+                            
+                            <button 
+                                onClick={() => loadLevel(currentLevelId + 1)}
+                                className="w-full py-4 bg-green-500 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-green-600 transition active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                Next Level <ArrowRight />
+                            </button>
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="flex flex-col items-center gap-4">

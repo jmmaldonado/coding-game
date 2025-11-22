@@ -73,4 +73,84 @@ export const levels: Level[] = [
       [W, W, W, W, W, W],
     ]
   },
+  {
+    id: 6,
+    name: "Zig Zag",
+    tutorialText: "Use a Loop to zig-zag your way to the top!",
+    availableBlocks: ['MOVE_FORWARD', 'TURN_LEFT', 'TURN_RIGHT', 'LOOP'],
+    minStars: 0,
+    start: { x: 1, y: 5, dir: 'RIGHT' },
+    grid: [
+      [W, W, W, W, W, W, W],
+      [W, E, E, F, W, W, W],
+      [W, E, W, W, W, W, W],
+      [W, E, E, W, W, W, W],
+      [W, W, E, E, W, W, W],
+      [W, S, W, E, W, W, W],
+      [W, W, W, W, W, W, W],
+    ]
+  },
+  {
+    id: 7,
+    name: "The Maze",
+    tutorialText: "Codey is lost! Guide him out.",
+    availableBlocks: ['MOVE_FORWARD', 'TURN_LEFT', 'TURN_RIGHT'],
+    minStars: 0,
+    start: { x: 1, y: 1, dir: 'DOWN' },
+    grid: [
+      [W, W, W, W, W, W, W],
+      [W, S, W, E, E, E, W],
+      [W, E, W, W, W, E, W],
+      [W, E, E, E, W, E, W],
+      [W, W, W, E, E, E, W],
+      [W, F, E, E, W, W, W],
+      [W, W, W, W, W, W, W],
+    ]
+  },
+  {
+    id: 8,
+    name: "Smart Robot",
+    tutorialText: "Use 'If Wall' to turn automatically!",
+    availableBlocks: ['MOVE_FORWARD', 'TURN_LEFT', 'IF_WALL', 'LOOP'],
+    minStars: 0,
+    start: { x: 1, y: 1, dir: 'RIGHT' },
+    grid: [
+      [W, W, W, W, W, W, W],
+      [W, S, E, E, E, E, W],
+      [W, W, W, W, W, E, W],
+      [W, F, E, E, E, E, W],
+      [W, W, W, W, W, W, W],
+    ]
+  },
+  {
+    id: 9,
+    name: "Treasure Hunter",
+    tutorialText: "Collect all stars! Use 'If Star' to detect them.",
+    availableBlocks: ['MOVE_FORWARD', 'TURN_RIGHT', 'IF_STAR', 'LOOP'],
+    minStars: 3,
+    start: { x: 1, y: 1, dir: 'RIGHT' },
+    grid: [
+      [W, W, W, W, W, W, W],
+      [W, S, ST, ST, ST, F, W],
+      [W, W, W, W, W, W, W],
+    ]
+  },
+  {
+    id: 10,
+    name: "The Gauntlet",
+    tutorialText: "The ultimate test. Jump, Loop, and Think!",
+    availableBlocks: ['MOVE_FORWARD', 'TURN_LEFT', 'TURN_RIGHT', 'JUMP', 'LOOP', 'IF_WALL'],
+    minStars: 1,
+    start: { x: 1, y: 6, dir: 'RIGHT' },
+    grid: [
+      [W, W, W, W, W, W, W, W],
+      [W, E, E, W, E, ST, E, W],
+      [W, W, E, W, E, W, E, W],
+      [W, E, E, E, E, W, E, W],
+      [W, E, W, W, W, W, E, W],
+      [W, E, W, F, W, W, E, W],
+      [W, S, W, E, E, E, E, W],
+      [W, W, W, W, W, W, W, W],
+    ]
+  },
 ];
