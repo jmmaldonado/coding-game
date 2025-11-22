@@ -45,10 +45,17 @@ export const Block: React.FC<BlockProps> = ({ instruction }) => {
   const selectedBlockId = useGameStore(s => s.selectedBlockId);
   const activeInstructionId = useGameStore(s => s.activeInstructionId);
   const setSelectedBlockId = useGameStore(s => s.setSelectedBlockId);
+  const updateInstruction = useGameStore(s => s.updateInstruction);
   // const removeInstruction = useGameStore(s => s.removeInstruction); // Removed for drag-to-delete (future)
 
   const isSelected = selectedBlockId === instruction.id;
   const isActive = activeInstructionId === instruction.id;
+  
+  const handleLoopChange = (delta: number) => {
+      if (instruction.type !== 'LOOP' || typeof instruction.loopCount !== 'number') return;
+      const newCount = Math.max(2, Math.min(9, instruction.loopCount + delta)); // Limit 2-9
+      updateInstruction(instruction.id, { loopCount: newCount });
+  };
 
   return (
     <motion.div
@@ -74,7 +81,25 @@ export const Block: React.FC<BlockProps> = ({ instruction }) => {
     >
       <div className="flex items-center gap-2 p-2 md:p-3">
         <BlockIcon type={instruction.type} />
-        <span className="text-xs md:text-sm"><BlockLabel type={instruction.type} loopCount={instruction.loopCount} /></span>
+        
+        {instruction.type === 'LOOP' ? (
+             <div className="flex items-center gap-2">
+                <span className="text-xs md:text-sm">Loop</span>
+                <div className="flex items-center bg-black/20 rounded-lg p-0.5" onClick={(e) => e.stopPropagation()}>
+                    <button 
+                        onClick={() => handleLoopChange(-1)}
+                        className="w-5 h-5 flex items-center justify-center hover:bg-white/20 rounded text-xs active:scale-90 transition"
+                    >-</button>
+                    <span className="mx-1 text-xs font-mono min-w-[12px] text-center">{instruction.loopCount}</span>
+                     <button 
+                        onClick={() => handleLoopChange(1)}
+                        className="w-5 h-5 flex items-center justify-center hover:bg-white/20 rounded text-xs active:scale-90 transition"
+                    >+</button>
+                </div>
+             </div>
+        ) : (
+            <span className="text-xs md:text-sm"><BlockLabel type={instruction.type} loopCount={instruction.loopCount} /></span>
+        )}
       </div>
 
       {/* Render Children if any */}
