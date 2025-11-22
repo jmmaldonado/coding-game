@@ -53,7 +53,14 @@ export const Block: React.FC<BlockProps> = ({ instruction }) => {
   return (
     <motion.div
       layout
-      onClick={(e) => { e.stopPropagation(); setSelectedBlockId(instruction.id); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (isSelected) {
+          setSelectedBlockId(null);
+        } else {
+          setSelectedBlockId(instruction.id);
+        }
+      }}
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: isSelected ? 1.05 : 1, opacity: 1 }}
       className={clsx(

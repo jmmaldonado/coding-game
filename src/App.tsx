@@ -4,7 +4,6 @@ import { levels } from './data/levels';
 import { GridBoard } from './components/GridBoard';
 import { CodeEditor } from './components/CodeEditor';
 import { Palette } from './components/Palette';
-import { Controls } from './components/Controls';
 import { CodeToolbar } from './components/CodeToolbar';
 import { GameLoop } from './components/GameLoop';
 import { Overlay } from './components/Overlay';
@@ -73,9 +72,6 @@ function App() {
                 {currentLevel?.tutorialText}
              </div>
              <GridBoard />
-             <div className="absolute bottom-4 right-4 flex gap-2">
-                 <Controls />
-             </div>
         </div>
 
         {/* Code Area */}
