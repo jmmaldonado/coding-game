@@ -86,7 +86,7 @@ export const levels: Level[] = [
       [W, E, W, W, W, W, W],
       [W, E, E, W, W, W, W],
       [W, W, E, E, W, W, W],
-      [W, S, W, E, W, W, W],
+      [W, S, E, E, W, W, W],
       [W, W, W, W, W, W, W],
     ]
   },
