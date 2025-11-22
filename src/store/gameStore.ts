@@ -53,8 +53,12 @@ const findInstruction = (list: Instruction[], id: string): { item: Instruction, 
   return null;
 };
 
+const INITIAL_LEVEL_ID = 1;
+const initialLevel = levels.find(l => l.id === INITIAL_LEVEL_ID);
+const initialPlayerState: PlayerState = initialLevel ? { ...initialLevel.start } : { x: 0, y: 0, dir: 'RIGHT' };
+
 export const useGameStore = create<GameState>((set, get) => ({
-  currentLevelId: 1,
+  currentLevelId: INITIAL_LEVEL_ID,
   unlockedLevels: [1],
   stars: 0,
   
@@ -63,7 +67,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   isPaused: false,
   executionSpeed: 500, // ms per tick
   
-  playerState: { x: 0, y: 0, dir: 'RIGHT' },
+  playerState: initialPlayerState,
   collectedStars: [],
   gameStatus: 'IDLE',
   activeInstructionId: null,
