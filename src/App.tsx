@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from './store/gameStore';
 import { levels } from './data/levels';
 import { GridBoard } from './components/GridBoard';
@@ -21,6 +21,11 @@ function App() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   
   const currentLevel = levels.find(l => l.id === currentLevelId);
+
+  // Init Level on Mount to ensure playerState is correct
+  useEffect(() => {
+      loadLevel(currentLevelId);
+  }, []); // Run once
 
   const handleImport = () => {
       const data = prompt("Paste your save code here:");
