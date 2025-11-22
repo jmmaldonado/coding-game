@@ -79,7 +79,7 @@ function App() {
 
         {/* Code Area */}
         <div className="flex-1 bg-white flex flex-col border-l border-gray-200 shadow-xl z-10 max-h-[50vh] md:max-h-full md:w-[400px] md:flex-none">
-            <div className="p-3 bg-gray-50 border-b border-gray-200 font-bold text-gray-500 text-sm flex justify-between">
+            <div className="p-3 bg-gray-50 border-b border-gray-200 font-bold text-gray-500 text-sm flex justify-between items-center">
                 <span>YOUR CODE</span>
                 <span className="text-xs bg-gray-200 px-2 py-1 rounded">{codeLength} blocks</span>
             </div>
