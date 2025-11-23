@@ -8,6 +8,7 @@ interface GameState {
   currentLevelId: number;
   unlockedLevels: number[];
   levelRecords: Record<number, number>; // Best block count per level ID
+  levelFailures: Record<number, number>; // Total failures per level ID
   stars: number; // Total stars across game
   pokedex: number[]; // Captured monster IDs
   
@@ -46,9 +47,11 @@ interface GameState {
   
   unlockAllLevels: () => void; // Cheat
   toggleDeveloperMode: () => void;
+  incrementFailure: (levelId: number) => void;
   getInstructionCount: () => number;
   exportSave: () => string;
   importSave: (data: string) => boolean;
+  clearProgress: () => void;
 }
 
 // Helper to find instruction in tree
@@ -91,6 +94,7 @@ export const useGameStore = create<GameState>()(
       currentLevelId: defaults.currentLevelId,
       unlockedLevels: [1],
       levelRecords: {},
+      levelFailures: {},
       stars: 0,
       pokedex: [],
       
@@ -216,12 +220,19 @@ export const useGameStore = create<GameState>()(
       unlockAllLevels: () => set({ unlockedLevels: levels.map(l => l.id) }),
       
       toggleDeveloperMode: () => set(state => ({ developerMode: !state.developerMode })),
+      
+      incrementFailure: (levelId) => set(state => ({
+        levelFailures: {
+            ...state.levelFailures,
+            [levelId]: (state.levelFailures[levelId] || 0) + 1
+        }
+      })),
 
       getInstructionCount: () => countInstructions(get().code),
 
       exportSave: () => {
-        const { unlockedLevels, stars, currentLevelId, levelRecords, developerMode, pokedex } = get();
-        return btoa(JSON.stringify({ unlockedLevels, stars, currentLevelId, levelRecords, developerMode, pokedex }));
+        const { unlockedLevels, stars, currentLevelId, levelRecords, levelFailures, developerMode, pokedex } = get();
+        return btoa(JSON.stringify({ unlockedLevels, stars, currentLevelId, levelRecords, levelFailures, developerMode, pokedex }));
       },
 
       importSave: (data) => {
@@ -232,6 +243,7 @@ export const useGameStore = create<GameState>()(
                 unlockedLevels: parsed.unlockedLevels, 
                 stars: parsed.stars,
                 levelRecords: parsed.levelRecords || {},
+                levelFailures: parsed.levelFailures || {},
                 developerMode: parsed.developerMode || false,
                 pokedex: parsed.pokedex || []
             };
@@ -249,6 +261,24 @@ export const useGameStore = create<GameState>()(
             // ignore
         }
         return false;
+      },
+
+      clearProgress: () => {
+          set({
+              unlockedLevels: [1],
+              levelRecords: {},
+              levelFailures: {},
+              stars: 0,
+              pokedex: [],
+              currentLevelId: 1,
+              code: [],
+              gameStatus: 'IDLE',
+              isPlaying: false,
+              playerState: defaults.playerState,
+              collectedStars: [],
+              collectedKeys: [],
+              openedDoors: []
+          });
       }
     }),
     {
@@ -258,6 +288,7 @@ export const useGameStore = create<GameState>()(
         stars: state.stars,
         currentLevelId: state.currentLevelId,
         levelRecords: state.levelRecords,
+        levelFailures: state.levelFailures,
         developerMode: state.developerMode,
         pokedex: state.pokedex,
         // We persist playerState so that on reload the player isn't briefly in the wrong spot (Level 1 default) 

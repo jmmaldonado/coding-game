@@ -7,7 +7,7 @@ import { Palette } from './components/Palette';
 import { CodeToolbar } from './components/CodeToolbar';
 import { GameLoop } from './components/GameLoop';
 import { Overlay } from './components/Overlay';
-import { Menu, X, Download, Upload, Trophy, Star, Key, Book, Cat, Dog, Rabbit, Bug, Bird, Fish, Ghost, Zap } from 'lucide-react';
+import { Menu, X, Download, Upload, Trophy, Star, Key, Book, Trash2, Cat, Dog, Rabbit, Bug, Bird, Fish, Ghost, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
 import { MONSTER_NAMES, MONSTER_COUNT } from './utils/pokemonHelpers';
 
@@ -16,10 +16,12 @@ function App() {
   const loadLevel = useGameStore(s => s.loadLevel);
   const unlockedLevels = useGameStore(s => s.unlockedLevels);
   const levelRecords = useGameStore(s => s.levelRecords);
+  const levelFailures = useGameStore(s => s.levelFailures);
   const developerMode = useGameStore(s => s.developerMode);
   const toggleDeveloperMode = useGameStore(s => s.toggleDeveloperMode);
   const exportSave = useGameStore(s => s.exportSave);
   const importSave = useGameStore(s => s.importSave);
+  const clearProgress = useGameStore(s => s.clearProgress);
   // const codeLength = useGameStore(s => s.code.length); // Removed, using total count
   const getInstructionCount = useGameStore(s => s.getInstructionCount);
   // @ts-ignore - code is subscribed to trigger re-renders for instruction count updates
@@ -66,6 +68,13 @@ function App() {
   const handleExport = () => {
       const code = exportSave();
       prompt("Copy this code to save your progress:", code);
+  };
+  
+  const handleReset = () => {
+      if (confirm("Are you sure you want to reset all progress? This cannot be undone.")) {
+          clearProgress();
+          setMenuOpen(false);
+      }
   };
 
   return (
@@ -173,6 +182,7 @@ function App() {
                       {levels.map(l => {
                           const isUnlocked = unlockedLevels.includes(l.id) || developerMode;
                           const record = levelRecords[l.id];
+                          const failures = levelFailures[l.id] || 0;
                           return (
                               <button 
                                 key={l.id}
@@ -191,18 +201,28 @@ function App() {
                                           <Trophy className="w-3 h-3 fill-yellow-400 text-yellow-400" /> {record}
                                       </div>
                                   )}
+                                  {failures > 0 && (
+                                      <div className="bg-gray-100/80 px-2 py-0.5 rounded-full text-xs text-gray-600 font-mono flex items-center gap-1 mt-1">
+                                          <Zap className="w-3 h-3 fill-gray-400 text-gray-500" /> {failures}
+                                      </div>
+                                  )}
                                   {!isUnlocked && <div className="text-xs">Locked</div>}
                               </button>
                           )
                       })}
                   </div>
 
-                  <div className="mt-auto pt-6 border-t border-gray-100 flex gap-2">
-                      <button onClick={handleExport} className="flex-1 py-3 bg-gray-100 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200">
-                          <Download className="w-4 h-4" /> Save Progress
-                      </button>
-                      <button onClick={handleImport} className="flex-1 py-3 bg-gray-100 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200">
-                          <Upload className="w-4 h-4" /> Load
+                  <div className="mt-auto pt-6 border-t border-gray-100 flex flex-col gap-2">
+                      <div className="flex gap-2">
+                          <button onClick={handleExport} className="flex-1 py-3 bg-gray-100 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200">
+                              <Download className="w-4 h-4" /> Save Progress
+                          </button>
+                          <button onClick={handleImport} className="flex-1 py-3 bg-gray-100 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200">
+                              <Upload className="w-4 h-4" /> Load
+                          </button>
+                      </div>
+                      <button onClick={handleReset} className="w-full py-2 bg-red-50 text-red-600 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-100 text-sm">
+                          <Trash2 className="w-4 h-4" /> Reset Progress
                       </button>
                   </div>
               </div>

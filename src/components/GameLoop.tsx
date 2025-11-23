@@ -82,6 +82,7 @@ export const GameLoop = () => {
                     });
                     useGameStore.setState({ gameStatus: 'WON', isPlaying: false });
                 } else {
+                    useGameStore.getState().incrementFailure(currentLevelId);
                     useGameStore.setState({ gameStatus: 'LOST', error: result.message || "Try again!", isPlaying: false });
                 }
             }, 800);

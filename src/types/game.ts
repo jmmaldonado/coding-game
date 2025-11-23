@@ -26,6 +26,7 @@ export interface Position {
 
 export interface PlayerState extends Position {
   dir: Direction;
+  animation?: 'IDLE' | 'DENY';
 }
 
 export interface Level {

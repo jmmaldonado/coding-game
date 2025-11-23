@@ -46,7 +46,7 @@ export const GridBoard: React.FC = () => {
             ))}
             
             {/* Player Layer - Inside the grid container for perfect alignment */}
-            <Player x={playerState.x} y={playerState.y} dir={playerState.dir} rows={rows} cols={cols} />
+            <Player x={playerState.x} y={playerState.y} dir={playerState.dir} animation={playerState.animation} rows={rows} cols={cols} />
         </div>
     </div>
   );
@@ -152,7 +152,7 @@ const Tile = ({ type, x, y, isCollected, isOpen }: { type: TileType, x: number, 
     );
 };
 
-const Player = ({ x, y, dir, rows, cols }: { x: number, y: number, dir: Direction, rows: number, cols: number }) => {
+const Player = ({ x, y, dir, animation, rows, cols }: { x: number, y: number, dir: Direction, animation?: 'IDLE' | 'DENY', rows: number, cols: number }) => {
     // ... code omitted ...
     return (
         <div 
@@ -183,13 +183,13 @@ const Player = ({ x, y, dir, rows, cols }: { x: number, y: number, dir: Directio
                 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-                <Robot dir={dir} />
+                <Robot dir={dir} animation={animation} />
             </motion.div>
         </div>
     );
 };
 
-const Robot = ({ dir }: { dir: Direction }) => {
+const Robot = ({ dir, animation }: { dir: Direction, animation?: 'IDLE' | 'DENY' }) => {
     const rotationMap: Record<Direction, number> = React.useMemo(() => ({
         'UP': 0,
         'RIGHT': 90,
@@ -214,8 +214,14 @@ const Robot = ({ dir }: { dir: Direction }) => {
 
     return (
         <motion.div 
-            animate={{ rotate: rotationState }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
+            animate={{ 
+                rotate: rotationState,
+                x: animation === 'DENY' ? [0, -5, 5, -5, 5, 0] : 0
+            }}
+            transition={{ 
+                rotate: { duration: 0.5, ease: "easeInOut" },
+                x: { duration: 0.4, ease: "easeInOut" }
+            }}
             className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center relative z-20"
         >
             {/* Ears */}

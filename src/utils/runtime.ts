@@ -37,6 +37,9 @@ export class GameRuntime {
   }
 
   public step(): StepResult {
+    // Reset animation state at start of step
+    this.playerState.animation = 'IDLE';
+
     if (this.status !== 'RUNNING') {
       return this.getResult(null);
     }
@@ -146,6 +149,7 @@ export class GameRuntime {
 
     if (tile === 'WALL') {
       // Bonk!
+       this.playerState.animation = 'DENY';
        return this.getResult(id, 'Bonk!');
     } else if (tile === 'HOLE') {
        this.playerState = { ...this.playerState, x: targetX, y: targetY };
@@ -154,6 +158,7 @@ export class GameRuntime {
     } else if (tile === 'DOOR') {
         // Door logic
         if (!this.openedDoors.has(`${targetX},${targetY}`)) {
+             this.playerState.animation = 'DENY';
              return this.getResult(id, 'Locked! Find a key.');
         }
         // If opened, it acts like empty/floor, proceed.
@@ -188,13 +193,16 @@ export class GameRuntime {
 
     // Check obstacle (WALL or Closed DOOR)
     if (midTile === 'WALL') {
+        this.playerState.animation = 'DENY';
         return this.getResult(id, "Can't jump over walls!");
     }
     if (midTile === 'DOOR' && !this.openedDoors.has(`${midX},${midY}`)) {
+        this.playerState.animation = 'DENY';
         return this.getResult(id, "Can't jump over locked doors!");
     }
 
     if (targetTile === 'WALL') {
+         this.playerState.animation = 'DENY';
          return this.getResult(id, "Can't jump into a wall!");
     }
     
