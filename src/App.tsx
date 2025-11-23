@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from './store/gameStore';
 import { levels } from './data/levels';
 import { GridBoard } from './components/GridBoard';
@@ -7,8 +7,9 @@ import { Palette } from './components/Palette';
 import { CodeToolbar } from './components/CodeToolbar';
 import { GameLoop } from './components/GameLoop';
 import { Overlay } from './components/Overlay';
-import { Menu, X, Download, Upload, Trophy, Star, Key } from 'lucide-react';
+import { Menu, X, Download, Upload, Trophy, Star, Key, Book, Cat, Dog, Rabbit, Bug, Bird, Fish, Ghost, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
+import { MONSTER_NAMES, MONSTER_COUNT } from './utils/pokemonHelpers';
 
 function App() {
   const currentLevelId = useGameStore(s => s.currentLevelId);
@@ -25,23 +26,24 @@ function App() {
       const code = useGameStore(s => s.code); // Subscribe to code changes to trigger re-render of count
     
     const isMenuOpen = useGameStore(s => s.isMenuOpen);
-    const setMenuOpen = useGameStore(s => s.setMenuOpen);
-    const collectedStars = useGameStore(s => s.collectedStars);
-    
-    const currentLevel = levels.find(l => l.id === currentLevelId);
-    const instructionCount = getInstructionCount();
-    
-      // Calculate max stars for current level (number of 'STAR' tiles)
-    
-      const maxStars = currentLevel?.grid.flat().filter(t => t === 'STAR').length || 0;
-    
-      const starsCollectedCount = collectedStars.length;
-    
-      const collectedKeys = useGameStore(s => s.collectedKeys);
-    
-      const keysCount = collectedKeys.length;
-    
-      const maxKeys = currentLevel?.grid.flat().filter(t => t === 'KEY').length || 0;
+  const setMenuOpen = useGameStore(s => s.setMenuOpen);
+  const collectedKeys = useGameStore(s => s.collectedKeys);
+  const collectedStars = useGameStore(s => s.collectedStars);
+  const pokedex = useGameStore(s => s.pokedex);
+  
+  // Local state for Pokedex modal
+  const [isPokedexOpen, setPokedexOpen] = useState(false);
+  
+  const currentLevel = levels.find(l => l.id === currentLevelId);
+  const instructionCount = getInstructionCount();
+  const keysCount = collectedKeys.length;
+  const maxKeys = currentLevel?.grid.flat().filter(t => t === 'KEY').length || 0;
+  
+  // Calculate max stars for current level (number of 'STAR' tiles)
+  const maxStars = currentLevel?.grid.flat().filter(t => t === 'STAR').length || 0;
+  const starsCollectedCount = collectedStars.length;
+  
+  const monsterIcons = [Cat, Dog, Rabbit, Bug, Bird, Fish, Ghost, Zap];
     
     
     
@@ -93,12 +95,20 @@ function App() {
                 <p className="text-xs text-gray-500">{currentLevel?.name}</p>
             </div>
         </div>
-        <button 
-            onClick={() => setMenuOpen(true)}
-            className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 active:scale-95 transition"
-        >
-            <Menu />
-        </button>
+        <div className="flex gap-2">
+            <button 
+                onClick={() => setPokedexOpen(true)}
+                className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 active:scale-95 transition flex items-center gap-1 font-bold text-xs"
+            >
+                <Book className="w-4 h-4" /> <span className="hidden sm:inline">DEX</span>
+            </button>
+            <button 
+                onClick={() => setMenuOpen(true)}
+                className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 active:scale-95 transition"
+            >
+                <Menu />
+            </button>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -194,6 +204,47 @@ function App() {
                       <button onClick={handleImport} className="flex-1 py-3 bg-gray-100 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200">
                           <Upload className="w-4 h-4" /> Load
                       </button>
+                  </div>
+              </div>
+          </div>
+      )}
+
+      {/* Pokedex Modal */}
+      {isPokedexOpen && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center items-center">
+              <div className="bg-red-500 w-full h-full md:w-[600px] md:h-[500px] md:rounded-3xl p-6 flex flex-col animate-pop-in border-4 border-red-700 shadow-2xl relative">
+                   <div className="flex justify-between items-center mb-6 text-white">
+                      <h2 className="text-2xl font-black tracking-wider flex items-center gap-2"><Book /> POKEDEX</h2>
+                      <button onClick={() => setPokedexOpen(false)} className="p-2 hover:bg-white/20 rounded-full"><X /></button>
+                  </div>
+                  
+                  <div className="bg-white rounded-xl p-4 flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-4 gap-4 shadow-inner">
+                      {Array.from({ length: MONSTER_COUNT }).map((_, i) => {
+                          const isCaught = pokedex.includes(i);
+                          const Icon = monsterIcons[i];
+                          return (
+                              <div key={i} className={clsx(
+                                  "aspect-square rounded-xl flex flex-col items-center justify-center gap-2 border-2",
+                                  isCaught ? "bg-white border-red-100" : "bg-gray-100 border-gray-200"
+                              )}>
+                                  {isCaught ? (
+                                      <>
+                                        <Icon className="w-10 h-10 text-purple-600" />
+                                        <span className="font-bold text-sm text-gray-700">{MONSTER_NAMES[i]}</span>
+                                      </>
+                                  ) : (
+                                      <>
+                                        <div className="w-10 h-10 text-gray-300 flex items-center justify-center font-black text-2xl">?</div>
+                                        <span className="font-bold text-xs text-gray-300">???</span>
+                                      </>
+                                  )}
+                              </div>
+                          );
+                      })}
+                  </div>
+                  
+                  <div className="mt-4 text-center text-white/80 font-mono text-sm">
+                      CAUGHT: {pokedex.length} / {MONSTER_COUNT}
                   </div>
               </div>
           </div>
