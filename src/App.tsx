@@ -22,10 +22,10 @@ function App() {
   const importSave = useGameStore(s => s.importSave);
   // const codeLength = useGameStore(s => s.code.length); // Removed, using total count
   const getInstructionCount = useGameStore(s => s.getInstructionCount);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const code = useGameStore(s => s.code); // Subscribe to code changes to trigger re-render of count
-    
-    const isMenuOpen = useGameStore(s => s.isMenuOpen);
+  // @ts-ignore - code is subscribed to trigger re-renders for instruction count updates
+  const code = useGameStore(s => s.code); 
+  
+  const isMenuOpen = useGameStore(s => s.isMenuOpen);
   const setMenuOpen = useGameStore(s => s.setMenuOpen);
   const collectedKeys = useGameStore(s => s.collectedKeys);
   const collectedStars = useGameStore(s => s.collectedStars);
