@@ -15,6 +15,8 @@ function App() {
   const loadLevel = useGameStore(s => s.loadLevel);
   const unlockedLevels = useGameStore(s => s.unlockedLevels);
   const levelRecords = useGameStore(s => s.levelRecords);
+  const developerMode = useGameStore(s => s.developerMode);
+  const toggleDeveloperMode = useGameStore(s => s.toggleDeveloperMode);
   const exportSave = useGameStore(s => s.exportSave);
   const importSave = useGameStore(s => s.importSave);
   // const codeLength = useGameStore(s => s.code.length); // Removed, using total count
@@ -59,7 +61,18 @@ function App() {
       {/* Header */}
       <header className="h-16 bg-white shadow-sm flex items-center justify-between px-4 z-20 shrink-0">
         <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">
+            <div 
+                onClick={(e) => {
+                    if (e.detail === 3) {
+                        toggleDeveloperMode();
+                    }
+                }}
+                className={clsx(
+                    "w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md cursor-pointer select-none transition-colors",
+                    developerMode ? "bg-red-500" : "bg-primary"
+                )}
+                title="Codey's Quest"
+            >
                 C
             </div>
             <div>
@@ -128,7 +141,7 @@ function App() {
                   
                   <div className="grid grid-cols-4 gap-4 overflow-y-auto p-2">
                       {levels.map(l => {
-                          const isUnlocked = unlockedLevels.includes(l.id);
+                          const isUnlocked = unlockedLevels.includes(l.id) || developerMode;
                           const record = levelRecords[l.id];
                           return (
                               <button 

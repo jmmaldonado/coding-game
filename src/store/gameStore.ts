@@ -16,10 +16,13 @@ interface GameState {
   isPaused: boolean;
   isMenuOpen: boolean;
   executionSpeed: number;
+  developerMode: boolean;
   
   // Runtime State
   playerState: PlayerState;
   collectedStars: string[]; // IDs or coordinates 'x,y'
+  collectedKeys: string[]; // IDs or coordinates 'x,y' of collected keys
+  openedDoors: string[]; // IDs or coordinates 'x,y' of opened doors
   gameStatus: 'IDLE' | 'RUNNING' | 'WON' | 'LOST';
   activeInstructionId: string | null;
   selectedBlockId: string | null;
@@ -41,6 +44,7 @@ interface GameState {
   tick: () => void; // Execute one step
   
   unlockAllLevels: () => void; // Cheat
+  toggleDeveloperMode: () => void;
   getInstructionCount: () => number;
   exportSave: () => string;
   importSave: (data: string) => boolean;
@@ -93,9 +97,12 @@ export const useGameStore = create<GameState>()(
       isPaused: false,
       isMenuOpen: false,
       executionSpeed: 800, // ms per tick - Slower for clearer steps
+      developerMode: false,
       
       playerState: defaults.playerState,
       collectedStars: [],
+      collectedKeys: [],
+      openedDoors: [],
       gameStatus: 'IDLE',
       activeInstructionId: null,
       selectedBlockId: null,
@@ -109,6 +116,8 @@ export const useGameStore = create<GameState>()(
           code: [],
           playerState: { ...level.start },
           collectedStars: [],
+          collectedKeys: [],
+          openedDoors: [],
           gameStatus: 'IDLE',
           isPlaying: false,
           isMenuOpen: false, // Close menu on load
@@ -176,6 +185,8 @@ export const useGameStore = create<GameState>()(
           gameStatus: 'RUNNING',
           playerState: { ...level.start },
           collectedStars: [],
+          collectedKeys: [],
+          openedDoors: [],
           error: null,
           activeInstructionId: null
         });
@@ -191,6 +202,8 @@ export const useGameStore = create<GameState>()(
           gameStatus: 'IDLE',
           playerState: { ...level.start },
           collectedStars: [],
+          collectedKeys: [],
+          openedDoors: [],
           activeInstructionId: null,
           error: null
         });
@@ -199,6 +212,8 @@ export const useGameStore = create<GameState>()(
       tick: () => {},
 
       unlockAllLevels: () => set({ unlockedLevels: levels.map(l => l.id) }),
+      
+      toggleDeveloperMode: () => set(state => ({ developerMode: !state.developerMode })),
 
       getInstructionCount: () => countInstructions(get().code),
 
@@ -239,6 +254,7 @@ export const useGameStore = create<GameState>()(
         stars: state.stars,
         currentLevelId: state.currentLevelId,
         levelRecords: state.levelRecords,
+        developerMode: state.developerMode,
         // We persist playerState so that on reload the player isn't briefly in the wrong spot (Level 1 default) 
         // before App.tsx useEffect runs.
         playerState: state.playerState 
