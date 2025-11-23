@@ -9,6 +9,7 @@ interface GameState {
   unlockedLevels: number[];
   levelRecords: Record<number, number>; // Best block count per level ID
   stars: number; // Total stars across game
+  pokedex: number[]; // Captured monster IDs
   
   // Level State
   code: Instruction[];
@@ -91,6 +92,7 @@ export const useGameStore = create<GameState>()(
       unlockedLevels: [1],
       levelRecords: {},
       stars: 0,
+      pokedex: [],
       
       code: [],
       isPlaying: false,
@@ -218,8 +220,8 @@ export const useGameStore = create<GameState>()(
       getInstructionCount: () => countInstructions(get().code),
 
       exportSave: () => {
-        const { unlockedLevels, stars, currentLevelId, levelRecords } = get();
-        return btoa(JSON.stringify({ unlockedLevels, stars, currentLevelId, levelRecords }));
+        const { unlockedLevels, stars, currentLevelId, levelRecords, developerMode, pokedex } = get();
+        return btoa(JSON.stringify({ unlockedLevels, stars, currentLevelId, levelRecords, developerMode, pokedex }));
       },
 
       importSave: (data) => {
@@ -229,7 +231,9 @@ export const useGameStore = create<GameState>()(
             const newState: Partial<GameState> = { 
                 unlockedLevels: parsed.unlockedLevels, 
                 stars: parsed.stars,
-                levelRecords: parsed.levelRecords || {}
+                levelRecords: parsed.levelRecords || {},
+                developerMode: parsed.developerMode || false,
+                pokedex: parsed.pokedex || []
             };
             if (parsed.currentLevelId) {
                 const level = levels.find(l => l.id === parsed.currentLevelId);
@@ -255,6 +259,7 @@ export const useGameStore = create<GameState>()(
         currentLevelId: state.currentLevelId,
         levelRecords: state.levelRecords,
         developerMode: state.developerMode,
+        pokedex: state.pokedex,
         // We persist playerState so that on reload the player isn't briefly in the wrong spot (Level 1 default) 
         // before App.tsx useEffect runs.
         playerState: state.playerState 

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
 import { levels } from '../data/levels';
 import { GameRuntime } from '../utils/runtime';
+import { getMonsterType } from '../utils/pokemonHelpers';
 import confetti from 'canvas-confetti';
 
 export const GameLoop = () => {
@@ -42,11 +43,29 @@ export const GameLoop = () => {
         // 2. Schedule Visual Updates (Wait for robot to arrive)
         // Robot animation is 0.5s. We update world state at 0.45s to feel responsive on arrival.
         visualsTimeoutRef.current = window.setTimeout(() => {
-             useGameStore.setState({
+             // Calculate new Pokedex entries
+             const currentPokedex = useGameStore.getState().pokedex;
+             const newIds: number[] = [];
+             
+             result.collectedStars.forEach(coord => {
+                 const [x, y] = coord.split(',').map(Number);
+                 const id = getMonsterType(x, y);
+                 if (!currentPokedex.includes(id) && !newIds.includes(id)) {
+                     newIds.push(id);
+                 }
+             });
+             
+             const updates: Record<string, unknown> = {
                 collectedStars: result.collectedStars,
                 collectedKeys: result.collectedKeys,
                 openedDoors: result.openedDoors
-             });
+             };
+             
+             if (newIds.length > 0) {
+                 updates.pokedex = [...currentPokedex, ...newIds];
+             }
+
+             useGameStore.setState(updates);
         }, 450);
 
         if (result.status !== 'RUNNING') {

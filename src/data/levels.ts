@@ -63,7 +63,7 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W],
-      [W, S, E, E, E, F, W],
+      [W, S, E, ST, E, F, W],
       [W, W, W, W, W, W, W],
     ]
   },
@@ -72,12 +72,12 @@ export const levels: Level[] = [
     name: "Jump Around",
     tutorialText: "Use Jump to hop over holes!",
     availableBlocks: ['MOVE_FORWARD', 'JUMP', 'TURN_RIGHT'],
-    minStars: 0,
+    minStars: 1,
     bestBlockCount: 2,
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W],
-      [W, S, H, E, F, W],
+      [W, S, H, ST, F, W],
       [W, W, W, W, W, W],
     ]
   },
@@ -92,10 +92,10 @@ export const levels: Level[] = [
     grid: [
       [W, W, W, W, W, W, W],
       [W, E, E, F, W, W, W],
-      [W, E, W, W, W, E, W], // Added walls to force zig zag
-      [W, E, E, W, W, W, W], // Wait, grid needs to match instructions.
+      [W, E, W, W, W, E, W],
+      [W, ST, E, W, W, W, W],
       [W, W, E, E, W, W, W],
-      [W, S, W, E, W, W, W],
+      [W, S, H, E, W, W, W],
       [W, W, W, W, W, W, W],
     ]
   },
@@ -109,7 +109,7 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'DOWN' },
     grid: [
       [W, W, W, W, W, W, W],
-      [W, S, W, E, E, E, W],
+      [W, S, W, E, E, ST, W],
       [W, E, W, W, W, E, W],
       [W, E, E, E, W, E, W],
       [W, W, W, E, E, E, W],
@@ -127,9 +127,9 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W],
-      [W, S, E, E, E, E, W],
+      [W, S, E, E, E, ST, W],
       [W, W, W, W, W, E, W],
-      [W, F, E, E, E, E, W],
+      [W, F, ST, E, E, E, W],
       [W, W, W, W, W, W, W],
     ]
   },
@@ -137,13 +137,13 @@ export const levels: Level[] = [
     id: 9,
     name: "Treasure Hunter",
     tutorialText: "Collect all stars! Use 'If Star' to detect them.",
-    availableBlocks: ['MOVE_FORWARD', 'TURN_RIGHT', 'IF_STAR', 'LOOP'],
-    minStars: 3,
+    availableBlocks: ['MOVE_FORWARD', 'TURN_RIGHT', 'JUMP', 'LOOP'],
+    minStars: 1,
     bestBlockCount: 5,
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W],
-      [W, S, ST, ST, ST, F, W],
+      [W, S, H, ST, H, F, W],
       [W, W, W, W, W, W, W],
     ]
   },
@@ -176,7 +176,7 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W, W, W],
-      [W, S, E, E, E, E, E, F, W],
+      [W, S, E, E, ST, E, E, F, W],
       [W, W, W, W, W, W, W, W, W],
     ]
   },
@@ -190,11 +190,11 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W],
-      [W, S, E, E, E, E, W],
+      [W, S, E, E, E, ST, W],
       [W, E, W, W, W, E, W],
       [W, E, W, W, W, E, W],
       [W, E, W, W, W, E, W],
-      [W, F, E, E, E, E, W],
+      [W, F, E, E, E, ST, W],
       [W, W, W, W, W, W, W],
     ]
   },
@@ -208,7 +208,7 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W, W, W],
-      [W, S, E, E, H, E, E, F, W],
+      [W, S, E, ST, H, E, E, F, W],
       [W, W, W, W, W, W, W, W, W],
     ]
   },
@@ -222,13 +222,13 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W, W, W],
-      [W, S, E, E, E, E, E, E, W],
-      [W, W, W, W, W, W, W, E, W],
+      [W, S, ST, E, E, E, E, E, W],
+      [W, W, W, W, W, W, W, ST, W],
       [W, E, E, E, E, E, W, E, W],
-      [W, E, W, W, W, E, W, E, W],
+      [W, ST, W, W, W, E, W, E, W],
       [W, E, W, F, E, E, W, E, W],
       [W, E, W, W, W, W, W, E, W],
-      [W, E, E, E, E, E, E, E, W],
+      [W, E, E, E, E, E, E, ST, W],
       [W, W, W, W, W, W, W, W, W],
     ]
   },
@@ -242,7 +242,7 @@ export const levels: Level[] = [
     start: { x: 1, y: 7, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W, W, W],
-      [W, E, E, W, ST, E, E, F, W],
+      [W, E, ST, W, E, E, E, F, W],
       [W, E, W, W, W, W, W, E, W],
       [W, E, E, E, E, H, E, E, W],
       [W, W, H, W, W, W, W, W, W],
@@ -262,8 +262,8 @@ export const levels: Level[] = [
     start: { x: 1, y: 1, dir: 'RIGHT' },
     grid: [
       [W, W, W, W, W, W, W, W],
-      [W, S, H, K, W, F, W, W],
-      [W, W, W, E, D, E, W, W],
+      [W, S, H, E, W, F, W, W],
+      [W, W, K, E, D, E, W, W],
       [W, W, W, W, W, W, W, W],
     ]
   }

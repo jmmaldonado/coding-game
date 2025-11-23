@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { levels } from '../data/levels';
 import type { TileType, Direction } from '../types/game';
-import { Star, Flag, Key, Lock, DoorOpen } from 'lucide-react';
+import { Key, Lock, DoorOpen, Trees, Waves, Cat, Dog, Rabbit, Bug, Bird, Fish, Ghost, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
+import { getMonsterType } from '../utils/pokemonHelpers';
 
 // const TILE_SIZE = 48; // Pixels - unused, using CSS Grid
 
@@ -54,6 +55,10 @@ export const GridBoard: React.FC = () => {
 const Tile = ({ type, x, y, isCollected, isOpen }: { type: TileType, x: number, y: number, isCollected: boolean, isOpen?: boolean }) => {
     const isDark = (x + y) % 2 === 1;
     
+    // Deterministic monster choice
+    const monsters = [Cat, Dog, Rabbit, Bug, Bird, Fish, Ghost, Zap];
+    const MonIcon = monsters[getMonsterType(x, y)];
+    
     // Door style
     if (type === 'DOOR') {
          return (
@@ -88,12 +93,22 @@ const Tile = ({ type, x, y, isCollected, isOpen }: { type: TileType, x: number, 
     
     return (
         <div className={clsx(
-            "w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded flex items-center justify-center relative",
-            type === 'WALL' ? "bg-slate-600 shadow-sm" : isDark ? "bg-white/40" : "bg-white/20",
-            type === 'HOLE' && "bg-black rounded-full scale-75 ring-2 ring-black/20"
+            "w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded flex items-center justify-center relative overflow-hidden",
+            type === 'WALL' ? "bg-emerald-600 shadow-sm" : type === 'HOLE' ? "bg-blue-400/30" : isDark ? "bg-white/40" : "bg-white/20",
+            type === 'HOLE' && "rounded-full scale-90 ring-4 ring-blue-300/50"
         )}>
             {type === 'START' && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full opacity-50" />}
-            {type === 'END' && <Flag className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 fill-red-500 animate-bounce-slight" />}
+            
+            {type === 'END' && (
+                <div className="relative w-4 h-4 sm:w-6 sm:h-6 flex items-center justify-center">
+                     {/* Pokeball Graphic */}
+                     <div className="absolute inset-0 bg-red-500 rounded-t-full h-[50%] top-0 z-10" />
+                     <div className="absolute inset-0 bg-white rounded-b-full h-[50%] bottom-0 border-t-2 border-slate-800 z-10" />
+                     <div className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full border-2 border-slate-800 z-20" />
+                     <div className="absolute inset-0 rounded-full border-2 border-slate-800 z-20 pointer-events-none" />
+                </div>
+            )}
+
             {type === 'STAR' && (
                 <AnimatePresence>
                     {!isCollected && (
@@ -102,11 +117,12 @@ const Tile = ({ type, x, y, isCollected, isOpen }: { type: TileType, x: number, 
                             animate={{ scale: 1 }}
                             exit={{ scale: 0, transition: { duration: 0.2 } }}
                         >
-                            <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-yellow-400 drop-shadow-md" />
+                            <MonIcon className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600 fill-purple-200 drop-shadow-md" />
                         </motion.div>
                     )}
                 </AnimatePresence>
             )}
+            
              {type === 'KEY' && (
                 <AnimatePresence>
                     {!isCollected && (
@@ -120,8 +136,17 @@ const Tile = ({ type, x, y, isCollected, isOpen }: { type: TileType, x: number, 
                     )}
                 </AnimatePresence>
             )}
+            
             {type === 'WALL' && (
-                <div className="w-full h-full bg-linear-to-b from-slate-500 to-slate-700 rounded border-t border-white/20" />
+                <div className="text-emerald-800/40">
+                    <Trees className="w-4 h-4 sm:w-6 sm:h-6" />
+                </div>
+            )}
+            
+            {type === 'HOLE' && (
+                 <div className="text-blue-500/50 animate-pulse">
+                    <Waves className="w-4 h-4 sm:w-6 sm:h-6" />
+                </div>
             )}
         </div>
     );
@@ -172,10 +197,8 @@ const Robot = ({ dir }: { dir: Direction }) => {
         'LEFT': 270
     }), []);
 
-    // Initialize state with the mapping of the initial direction
     const [rotationState, setRotationState] = React.useState(rotationMap[dir]);
 
-    // Update rotation when direction changes
     React.useEffect(() => {
         const targetBase = rotationMap[dir];
         const normalize = (angle: number) => ((angle % 360) + 360) % 360;
@@ -183,11 +206,8 @@ const Robot = ({ dir }: { dir: Direction }) => {
         setRotationState(currentRotation => {
              const currentNormalized = normalize(currentRotation);
              let delta = targetBase - currentNormalized;
-             
-             // Find shortest path (e.g. 270 -> 0 should be +90, not -270)
              if (delta > 180) delta -= 360;
              if (delta < -180) delta += 360;
-             
              return currentRotation + delta;
         });
     }, [dir, rotationMap]);
@@ -196,15 +216,30 @@ const Robot = ({ dir }: { dir: Direction }) => {
         <motion.div 
             animate={{ rotate: rotationState }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-white rounded-lg shadow-md border border-gray-200 flex items-center justify-center relative"
+            className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center relative z-20"
         >
-            {/* Eyes */}
-            <div className="absolute top-1 sm:top-1.5 flex gap-0.5 sm:gap-1">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-black rounded-full animate-pulse" />
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-black rounded-full animate-pulse delay-75" />
-            </div>
+            {/* Ears */}
+            <div className="absolute -top-1 sm:-top-2 left-0 w-2 h-3 sm:w-2.5 sm:h-4 bg-yellow-400 rounded-t-full border border-yellow-600 -rotate-12 z-0" />
+            <div className="absolute -top-1 sm:-top-2 right-0 w-2 h-3 sm:w-2.5 sm:h-4 bg-yellow-400 rounded-t-full border border-yellow-600 rotate-12 z-0" />
+            
             {/* Body */}
-            <div className="w-full h-full bg-linear-to-br from-indigo-400 to-indigo-600 rounded opacity-20 absolute inset-0" />
+            <div className="w-full h-full bg-yellow-400 rounded-lg shadow-md border-2 border-yellow-600 flex items-center justify-center relative z-10 overflow-hidden">
+                {/* Cheeks */}
+                <div className="absolute top-1/2 left-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full opacity-80" />
+                <div className="absolute top-1/2 right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full opacity-80" />
+
+                {/* Eyes */}
+                <div className="absolute top-1.5 sm:top-2 flex gap-1 sm:gap-2">
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-black rounded-full" />
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-black rounded-full" />
+                </div>
+                
+                {/* Nose/Mouth */}
+                 <div className="absolute top-3 sm:top-4 w-1 h-0.5 bg-black/50 rounded-full" />
+            </div>
+            
+            {/* Tail (Simple) */}
+            <div className="absolute -bottom-1 -left-1 w-2 h-4 sm:w-3 sm:h-6 bg-yellow-500 border border-yellow-700 -rotate-45 -z-10 skew-x-12" />
         </motion.div>
     );
 };
