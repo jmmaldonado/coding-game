@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { levels } from '../data/levels';
 import type { TileType, Direction } from '../types/game';
@@ -52,14 +52,18 @@ const Tile = ({ type, x, y, isCollected }: { type: TileType, x: number, y: numbe
         )}>
             {type === 'START' && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full opacity-50" />}
             {type === 'END' && <Flag className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 fill-red-500 animate-bounce-slight" />}
-            {type === 'STAR' && !isCollected && (
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                >
-                    <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-yellow-400 drop-shadow-md" />
-                </motion.div>
+            {type === 'STAR' && (
+                <AnimatePresence>
+                    {!isCollected && (
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0, transition: { delay: 0.3, duration: 0.2 } }}
+                        >
+                            <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-yellow-400 drop-shadow-md" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             )}
             {type === 'WALL' && (
                 <div className="w-full h-full bg-gradient-to-b from-slate-500 to-slate-700 rounded border-t border-white/20" />

@@ -4,6 +4,7 @@ import { ArrowRight, Undo2, Redo2, Repeat, Star, Square, Footprints } from 'luci
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
+import { getBlockColor } from '../utils/blockHelpers';
 
 interface BlockProps {
   instruction: Instruction;
@@ -35,12 +36,6 @@ export const BlockLabel = ({ type, loopCount }: { type: InstructionType, loopCou
     case 'IF_WALL': return 'If Wall';
     default: return type;
   }
-};
-
-export const getBlockColor = (type: InstructionType) => {
-  if (type === 'LOOP' || type === 'WHILE_PATH' || type.startsWith('IF')) return 'bg-accent border-b-4 border-yellow-600 text-black';
-  if (type.startsWith('TURN')) return 'bg-secondary border-b-4 border-pink-700 text-white';
-  return 'bg-primary border-b-4 border-violet-700 text-white';
 };
 
 export const Block: React.FC<BlockProps> = ({ instruction }) => {

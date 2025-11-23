@@ -7,7 +7,7 @@ import { Palette } from './components/Palette';
 import { CodeToolbar } from './components/CodeToolbar';
 import { GameLoop } from './components/GameLoop';
 import { Overlay } from './components/Overlay';
-import { Menu, X, Download, Upload, Trophy } from 'lucide-react';
+import { Menu, X, Download, Upload, Trophy, Star } from 'lucide-react';
 import { clsx } from 'clsx';
 
 function App() {
@@ -20,17 +20,22 @@ function App() {
   // const codeLength = useGameStore(s => s.code.length); // Removed, using total count
   const getInstructionCount = useGameStore(s => s.getInstructionCount);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const code = useGameStore(s => s.code); // Subscribe to code changes to trigger re-render of count
-  
-  const isMenuOpen = useGameStore(s => s.isMenuOpen);
-  const setMenuOpen = useGameStore(s => s.setMenuOpen);
-  
-  const currentLevel = levels.find(l => l.id === currentLevelId);
-  const instructionCount = getInstructionCount();
-
-  // Init Level on Mount to ensure playerState is correct
+      const code = useGameStore(s => s.code); // Subscribe to code changes to trigger re-render of count
+    
+    const isMenuOpen = useGameStore(s => s.isMenuOpen);
+    const setMenuOpen = useGameStore(s => s.setMenuOpen);
+    const collectedStars = useGameStore(s => s.collectedStars);
+    
+    const currentLevel = levels.find(l => l.id === currentLevelId);
+    const instructionCount = getInstructionCount();
+    
+    // Calculate max stars for current level (number of 'STAR' tiles)
+    const maxStars = currentLevel?.grid.flat().filter(t => t === 'STAR').length || 0;
+    const starsCollectedCount = collectedStars.length;
+    // Init Level on Mount to ensure playerState is correct
   useEffect(() => {
       loadLevel(currentLevelId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once
 
   const handleImport = () => {
@@ -82,21 +87,30 @@ function App() {
 
         {/* Code Area */}
         <div className="flex-1 bg-white flex flex-col border-l border-gray-200 shadow-xl z-10 max-h-[50vh] md:max-h-full md:w-[400px] md:flex-none">
-            <div className="p-3 bg-gray-50 border-b border-gray-200 font-bold text-gray-500 text-sm flex justify-between items-center h-12">
-                <div className="flex items-center gap-2">
-                    <span>BLOCKS</span>
+            <div className="p-3 bg-gray-50 border-b border-gray-200 font-bold text-gray-500 text-sm flex justify-between items-center h-12 gap-2 overflow-hidden">
+                <div className="flex items-center gap-2 shrink-0">
+                    {maxStars > 0 && (
+                        <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded text-yellow-700 shrink-0">
+                            <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-500 text-yellow-500" />
+                            <span className="text-xs font-bold font-mono">{starsCollectedCount}/{maxStars}</span>
+                        </div>
+                    )}
+
+                    <span className="hidden sm:inline text-xs font-bold text-gray-400 uppercase tracking-wider">BLOCKS</span>
                     <span className={clsx(
-                        "text-xs px-2 py-1 rounded font-mono bg-gray-200"
+                        "text-xs px-2 py-1 rounded font-mono bg-gray-200 min-w-[20px] text-center"
                     )}>
                         {instructionCount}
                     </span>
                     {levelRecords[currentLevelId] && (
-                        <span className="text-xs text-green-600 font-bold ml-1">
-                            Best: {levelRecords[currentLevelId]}
+                        <span className="hidden sm:flex items-center gap-1 text-xs text-green-600 font-bold ml-1 whitespace-nowrap">
+                            <Trophy className="w-3 h-3" /> {levelRecords[currentLevelId]}
                         </span>
                     )}
                 </div>
-                <CodeToolbar />
+                <div className="shrink-0">
+                    <CodeToolbar />
+                </div>
             </div>
             <CodeEditor className="flex-1" />
             <Palette />

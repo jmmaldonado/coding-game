@@ -1,7 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
 import { Block } from './Block';
-import type { Instruction } from '../types/game';
 
 interface CodeEditorProps {
   className?: string;

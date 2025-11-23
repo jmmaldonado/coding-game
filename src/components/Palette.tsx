@@ -1,7 +1,8 @@
 import React from 'react';
 import { useGameStore } from '../store/gameStore';
 import { levels } from '../data/levels';
-import { BlockIcon, BlockLabel, getBlockColor } from './Block';
+import { BlockIcon, BlockLabel } from './Block';
+import { getBlockColor } from '../utils/blockHelpers';
 import type { InstructionType } from '../types/game';
 import { clsx } from 'clsx';
 
